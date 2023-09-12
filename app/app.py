@@ -14,6 +14,7 @@ UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = 'your_secret_key'
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024
 
 # Initialize feature extractor and image indexer
 resnet_feature_extractor = FeatureExtractor('ResNet50')
@@ -34,14 +35,16 @@ def allowed_file(filename):
 def index():
     if request.method == 'POST':
         # Handle image upload
-        user_image = request.files['user_image']
-        if user_image and allowed_file(user_image.filename):
-            # Save the uploaded image to the uploads folder
-            filename = secure_filename(user_image.filename)
-            user_image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        uploaded_files = request.files.getlist('user_images[]')
 
-            # Index the uploaded image
-            image_indexer.index_single_image(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        for user_image in uploaded_files:
+            if user_image and allowed_file(user_image.filename):
+                # Save the uploaded image to the uploads folder
+                filename = secure_filename(user_image.filename)
+                user_image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+                # Index the uploaded image
+                image_indexer.index_single_image(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
             flash('Image uploaded and indexed successfully.')
 

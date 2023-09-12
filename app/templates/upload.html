@@ -8,7 +8,7 @@
 <body>
 <h1>Upload an Image</h1>
 <form method="POST" enctype="multipart/form-data">
-    <input type="file" name="user_image" accept=".jpg, .jpeg, .png" required>
+    <input type="file" name="user_images[]" accept=".jpg, .jpeg, .png" multiple required>
     <button type="submit">Upload</button>
 </form>
 <!-- Add a link to the search page -->
